@@ -26,6 +26,7 @@ function render(movies) {
         const td4 = document.createElement("td");
         const td5 = document.createElement("td");
         const td6 = document.createElement("td");
+        const td7 = document.createElement("td");
 
         td1.textContent = M.id;
         td2.textContent = M.title;
@@ -34,13 +35,24 @@ function render(movies) {
         td5.textContent = M.date;
         td6.textContent = M.rating;
 
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "수정";
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "삭제";
+        delBtn.addEventListener("click",()=>{
+            DELETE(M.id);
+        });
+        td7.appendChild(editBtn);
+        td7.appendChild(delBtn);
+
         tr.appendChild(td1);
         tr.appendChild(td2);
         tr.appendChild(td3);
         tr.appendChild(td5);
         tr.appendChild(td4);
         tr.appendChild(td6);
-
+        tr.appendChild(td7);
         list.appendChild(tr);
     });
 }
@@ -109,5 +121,25 @@ crudForm.addEventListener("submit", async (e) => {
     rating.value = "";
     showError("");
 })
+
+async function DELETE(id) {
+    if(!confirm("정말 삭제하겠습니까?")){
+        return;
+    }
+
+    try {
+        const response = await fetch(API_URL + "/" + id, {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error("삭제 실패");
+        }
+
+        await GET(); 
+    } catch (error) {
+        showError("삭제 실패");
+    }
+}
 
 GET();
