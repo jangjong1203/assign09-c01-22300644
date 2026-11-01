@@ -12,6 +12,8 @@ const date = document.querySelector("#date");
 const errorBox = document.querySelector("#errorBox");
 const crudForm = document.querySelector("#crudForm");
 const submitBtn = document.querySelector("#submitBtn");
+const searchInput = document.querySelector("#searchInput");
+const searchBtn = document.querySelector("#searchBtn");
 
 let editId = null;
 
@@ -175,5 +177,13 @@ async function UPDATE(id, newMovie) {
         showError("수정 실패");
     }
 }
+
+searchBtn.addEventListener("click", () => {
+    const keyword = searchInput.value;
+    const filtered = movies.filter(M => {
+        return M.title.includes(keyword) || M.director.includes(keyword);
+    });
+    render(filtered);
+});
 
 GET();
