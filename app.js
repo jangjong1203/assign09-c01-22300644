@@ -10,38 +10,39 @@ const rating = document.querySelector("#rating");
 const genre = document.querySelector("#genre");
 const date = document.querySelector("#date");
 const errorBox = document.querySelector("#errorBox");
+const crudForm = document.querySelector("#crudForm");
 
 function showError(message) {
     errorBox.textContent = message;
 }
 
-function render(movies){
+function render(movies) {
     list.innerHTML = "";
-        movies.forEach(M => {
-            const tr = document.createElement("tr");
-            const td1=document.createElement("td");
-            const td2=document.createElement("td");
-            const td3=document.createElement("td");
-            const td4=document.createElement("td");
-            const td5=document.createElement("td");
-            const td6=document.createElement("td");
+    movies.forEach(M => {
+        const tr = document.createElement("tr");
+        const td1 = document.createElement("td");
+        const td2 = document.createElement("td");
+        const td3 = document.createElement("td");
+        const td4 = document.createElement("td");
+        const td5 = document.createElement("td");
+        const td6 = document.createElement("td");
 
-            td1.textContent=M.id;
-            td2.textContent=M.title;
-            td3.textContent=M.director;
-            td4.textContent=M.genre;
-            td5.textContent=M.date;
-            td6.textContent=M.rating;
+        td1.textContent = M.id;
+        td2.textContent = M.title;
+        td3.textContent = M.director;
+        td4.textContent = M.genre;
+        td5.textContent = M.date;
+        td6.textContent = M.rating;
 
-            tr.appendChild(td1);
-            tr.appendChild(td2);
-            tr.appendChild(td3);
-            tr.appendChild(td5);
-            tr.appendChild(td4);
-            tr.appendChild(td6);
+        tr.appendChild(td1);
+        tr.appendChild(td2);
+        tr.appendChild(td3);
+        tr.appendChild(td5);
+        tr.appendChild(td4);
+        tr.appendChild(td6);
 
-            list.appendChild(tr);
-        });
+        list.appendChild(tr);
+    });
 }
 
 
@@ -50,15 +51,63 @@ async function GET() {
 
         const response = await fetch(API_URL);
         if (!response.ok) {
-            throw new Error('error:' +response.status);
+            throw new Error('error:' + response.status);
         }
         movies = await response.json();
         render(movies);
         showError("");
-    }catch(error){
+    } catch (error) {
         showError("주소를 확인해주세요");
     }
 }
 
+async function POST(newmovie) {
+    const response = await fetch(API_URL, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify(newmovie)
+    });
+    if (!response.ok) {
+        throw new Error("실패");
+    }
+    await GET();
+}
+crudForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+    if (title.value === "") {
+        showError("영화제목을 입력해주세요.");
+        return;
+    } else if (director.value === "") {
+        showError("감독을 입력해주세요.");
+        return;
+    } else if (date.value === "") {
+        showError("개봉일자를 입력해주세요.");
+        return;
+    } else if (genre.value === "") {
+        showError("장르를 입력해주세요.");
+        return;
+    } else if (rating.value === "" || rating.value < 0 || rating.value > 10) {
+        showError("평점은 0에서 10 사이로 입력해주세요.");
+        return;
+    }
+    const movie = {
+        title: title.value,
+        director: director.value,
+        date: date.value,
+        genre: genre.value,
+        rating: Number(rating.value)
+    };
+
+    await POST(movie);
+
+    title.value = "";
+    director.value = "";
+    date.value = "";
+    genre.value = "";
+    rating.value = "";
+    showError("");
+})
 
 GET();
