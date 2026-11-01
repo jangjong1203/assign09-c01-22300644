@@ -15,6 +15,7 @@
         <h1>영화 목록 관리</h1>
         <a href="index.html">돌아가기</a>
     </header>
+    <div id="errorBox"></div>
     <h2>새영화 등록</h2>
     <form id="crudForm">
         <label for="title">영화제목</label>
@@ -32,7 +33,7 @@
 
     <input type="text" id="searchInput">
     <button type="submit" id="searchBtn">검색하기</button>
-    <table id="movieList">
+    <table>
         <thead>
             <tr>
                 <th>ID</th>
@@ -43,13 +44,9 @@
                 <th>Rating</th>
             </tr>
         </thead>
-        <tbody>
-            <tr>
-                
-            </tr>
+        <tbody id="movieList">
         </tbody>
     </table>
+    <script src="app.js"></script>
 </body>
-<script></script>
-
 </html>
