@@ -11,6 +11,9 @@ const genre = document.querySelector("#genre");
 const date = document.querySelector("#date");
 const errorBox = document.querySelector("#errorBox");
 const crudForm = document.querySelector("#crudForm");
+const submitBtn = document.querySelector("#submitBtn");
+
+let editId = null;
 
 function showError(message) {
     errorBox.textContent = message;
@@ -37,10 +40,18 @@ function render(movies) {
 
         const editBtn = document.createElement("button");
         editBtn.textContent = "수정";
-
+        editBtn.addEventListener("click", () => {
+            editId = M.id;
+            title.value = M.title;
+            director.value = M.director;
+            date.value = M.date;
+            genre.value = M.genre;
+            rating.value = M.rating;
+            submitBtn.textContent = "수정하기";
+        });
         const delBtn = document.createElement("button");
         delBtn.textContent = "삭제";
-        delBtn.addEventListener("click",()=>{
+        delBtn.addEventListener("click", () => {
             DELETE(M.id);
         });
         td7.appendChild(editBtn);
@@ -111,9 +122,13 @@ crudForm.addEventListener("submit", async (e) => {
         genre: genre.value,
         rating: Number(rating.value)
     };
-
-    await POST(movie);
-
+    if (editId === null) {
+        await POST(movie);
+    } else {
+        await UPDATE(editId, movie);
+        editId = null;
+        submitBtn.textContent = "등록하기";
+    }
     title.value = "";
     director.value = "";
     date.value = "";
@@ -123,7 +138,7 @@ crudForm.addEventListener("submit", async (e) => {
 })
 
 async function DELETE(id) {
-    if(!confirm("정말 삭제하겠습니까?")){
+    if (!confirm("정말 삭제하겠습니까?")) {
         return;
     }
 
@@ -136,9 +151,28 @@ async function DELETE(id) {
             throw new Error("삭제 실패");
         }
 
-        await GET(); 
+        await GET();
     } catch (error) {
         showError("삭제 실패");
+    }
+}
+
+async function UPDATE(id, newMovie) {
+    try {
+        const response = await fetch(API_URL + "/" + id, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(newMovie)
+        });
+
+        if (!response.ok) {
+            throw new Error("수정 실패");
+        }
+        await GET();
+    } catch (error) {
+        showError("수정 실패");
     }
 }
 
